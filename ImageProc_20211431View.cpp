@@ -51,6 +51,8 @@ BEGIN_MESSAGE_MAP(CImageProc20211431View, CScrollView)
 	ON_COMMAND(ID_GEOMETRY_ZOOMOUT_MEAN_SUB, &CImageProc20211431View::OnGeometryZoomoutMeanSub)
 	ON_COMMAND(ID_GEOMETRY_AVG_FILTERING, &CImageProc20211431View::OnGeometryAvgFiltering)
 	ON_COMMAND(ID_GEOMETRY_ROTATION, &CImageProc20211431View::OnGeometryRotation)
+	ON_COMMAND(ID_GEOMETRY_HOLIZATIONAL_FILP, &CImageProc20211431View::OnGeometryHolizationalFilp)
+	ON_COMMAND(ID_GEOMETRY_VETICAL_FILP, &CImageProc20211431View::OnGeometryVeticalFilp)
 END_MESSAGE_MAP()
 
 // CImageProc20211431View 생성/소멸
@@ -1280,5 +1282,48 @@ void CImageProc20211431View::OnGeometryRotation()
 				}
 			}
 		}
+	Invalidate();
+}
+
+
+void CImageProc20211431View::OnGeometryHolizationalFilp()
+{
+	CImageProc20211431Doc* pDoc = GetDocument();
+	int x, y;
+
+	for(y=0; y<pDoc->ImageHeight; y++)
+		for (x = 0; x < pDoc->ImageWidth; x++)
+		{
+			if(pDoc->depth==1)
+				pDoc->resultImage[y][x] = pDoc->InputImage[y][pDoc->ImageWidth-1-x]; //그대로 복사-x
+			else
+			{
+				pDoc->resultImage[y][3 * x + 0] = pDoc->InputImage[y][3 * (pDoc->ImageWidth - 1 - x) + 0];
+				pDoc->resultImage[y][3 * x + 1] = pDoc->InputImage[y][3 * (pDoc->ImageWidth - 1 - x) + 1];
+				pDoc->resultImage[y][3 * x + 2] = pDoc->InputImage[y][3 * (pDoc->ImageWidth - 1 - x) + 2];
+			}
+		}
+	Invalidate();
+}
+
+
+void CImageProc20211431View::OnGeometryVeticalFilp()
+{
+	CImageProc20211431Doc* pDoc = GetDocument();
+	int x, y;
+
+	for (y = 0; y < pDoc->ImageHeight; y++) {
+		for (x = 0; x < pDoc->ImageWidth; x++) {
+			if (pDoc->depth == 1) {
+				pDoc->resultImage[y][x] = pDoc->InputImage[pDoc->ImageHeight - 1 - y][x];
+			}
+			else {
+				pDoc->resultImage[y][3 * x + 0] = pDoc->InputImage[pDoc->ImageHeight - 1 - y][3 * x + 0];
+				pDoc->resultImage[y][3 * x + 1] = pDoc->InputImage[pDoc->ImageHeight - 1 - y][3 * x + 1];
+				pDoc->resultImage[y][3 * x + 2] = pDoc->InputImage[pDoc->ImageHeight - 1 - y][3 * x + 2];
+			}
+		}
+	}
+
 	Invalidate();
 }
